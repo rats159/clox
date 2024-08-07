@@ -1,22 +1,25 @@
 #include <stdio.h>
 
 #include "common.h"
-#include "vm.h"
+#include "compiler.h"
 #include "debug.h"
+#include "vm.h"
 
 VM vm;
 
-void initVM(){}
+void initVM() {
+}
 
-void freeVM(){}
+void freeVM() {
+}
 
 static InterpretResult run() {
     #define READ_BYTE() (*vm.ip++)
     #define READ_CONSTANT() (vm.chunk->constants.values[READ_BYTE()])
 
     for (;;) {
-        #ifdef DEBUG_TRACE_EXECUTION 
-            disassembleInstruction(vm.chunk,(int)(vm.ip - vm.chunk->code));
+        #ifdef DEBUG_TRACE_EXECUTION
+            disassembleInstruction(vm.chunk, (int)(vm.ip - vm.chunk->code));
         #endif
         uint8_t instruction;
 
@@ -37,8 +40,7 @@ static InterpretResult run() {
     #undef READ_CONSTANT
 }
 
-InterpretResult interpret(Chunk* chunk) {
-    vm.chunk = chunk;
-    vm.ip = vm.chunk->code;
-    return run();
+InterpretResult interpret(const char* source) {
+    compile(source);
+    return INTERPRET_OK;
 }
