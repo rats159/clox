@@ -7,7 +7,7 @@ for %%f in ("src\*.c") do (
     set "file_list=!file_list! %%f"
 )
 
-gcc !file_list! -o "bin/clox"
+gcc !file_list! -g -o "bin/clox"
 
 if %errorlevel% equ 0 (
     echo Compilation successful.

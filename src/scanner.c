@@ -7,7 +7,7 @@
 typedef struct {
     const char* start;
     const char* current;
-    int line;
+    i32 line;
 } Scanner;
 
 Scanner scanner;
@@ -20,6 +20,10 @@ void initScanner(const char* source) {
 
 static bool isDigit(char c) {
     return c >= '0' && c <= '9';
+}
+
+static bool isAlpha(char c) {
+    return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c == '_');
 }
 
 static bool isAtEnd() {
@@ -90,7 +94,7 @@ static void skipWhitespace() {
     }
 }
 
-static TokenType checkKeyword(int start, int length, const char* rest,
+static TokenType checkKeyword(i32 start, i32 length, const char* rest,
                               TokenType type) {
     if (scanner.current - scanner.start == start + length &&
         memcmp(scanner.start + start, rest, length) == 0) {

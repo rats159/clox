@@ -6,21 +6,26 @@
 
 typedef enum {
     OP_CONSTANT,
+    OP_NEGATE,
     OP_RETURN,
+    OP_ADD,
+    OP_SUBTRACT,
+    OP_MULTIPLY,
+    OP_DIVIDE,
 } OpCode;
 
 typedef struct {
-    int count;
-    int capacity;
-    uint8_t* code;
+    i32 count;
+    i32 capacity;
+    byte* code;
     int* lines;
     ValueArray constants;
 } Chunk;
 
 void initChunk(Chunk* chunk);
-void writeChunk(Chunk* chunk, uint8_t byte, int line);
+void writeChunk(Chunk* chunk, byte byte, i32 line);
 void freeChunk(Chunk* chunk);
 
-int addConstant(Chunk* chunk, Value value);
+i32 addConstant(Chunk* chunk, Value value);
 
 #endif
