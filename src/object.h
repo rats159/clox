@@ -21,12 +21,12 @@ struct Obj {
 
 struct ObjString {
     Obj obj;
-    int length;
+    i32 length;
     char* chars;
 };
 
-ObjString* takeString(char* chars, int length);
-ObjString* copyString(const char* chars, int length);
+ObjString* takeString(char* chars, i32 length);
+ObjString* copyString(const char* chars, i32 length);
 
 void printObject(Value value);
 

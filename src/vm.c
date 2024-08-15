@@ -23,7 +23,7 @@ static void runtimeError(const char* format, ...) {
     fputs("\n", stderr);
 
     size_t instruction = vm.ip - vm.chunk->code - 1;
-    int line = vm.chunk->lines[instruction];
+    i32 line = vm.chunk->lines[instruction];
     fprintf(stderr, "[line %d] in script\n", line);
     resetStack();
 }
@@ -47,7 +47,7 @@ Value pop() {
     return *vm.stackTop;
 }
 
-static Value peek(int distance) {
+static Value peek(i32 distance) {
     return vm.stackTop[-1 - distance];
 }
 
@@ -59,7 +59,7 @@ static void concatenate() {
     ObjString* b = AS_STRING(pop());
     ObjString* a = AS_STRING(pop());
 
-    int length = a->length + b->length;
+    i32 length = a->length + b->length;
     char* chars = ALLOCATE(char, length + 1);
     memcpy(chars, a->chars, a->length);
     memcpy(chars + a->length, b->chars, b->length);
