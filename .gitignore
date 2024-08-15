@@ -53,3 +53,5 @@ dkms.conf
 
 # also other stuff
 .vscode/*
+
+*.lox

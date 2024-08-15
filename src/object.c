@@ -3,8 +3,10 @@
 
 #include "memory.h"
 #include "object.h"
+#include "table.h"
 #include "value.h"
 #include "vm.h"
+
 
 #define ALLOCATE_OBJ(type, objectType) \
     (type*)allocateObject(sizeof(type), objectType)
@@ -18,18 +20,36 @@ static Obj* allocateObject(size_t size, ObjType type) {
     return object;
 }
 
-static ObjString* allocateString(char* chars, i32 length) {
+static ObjString* allocateString(char* chars, i32 length, u32 hash) {
     ObjString* string = ALLOCATE_OBJ(ObjString, OBJ_STRING);
     string->length = length;
     string->chars = chars;
+    string->hash = hash;
+    tableSet(&vm.strings, string, NIL_VAL);
     return string;
 }
 
+// Note: This uses FNV-1a
+static u32 hashString(const char* key, i32 length) {
+    u32 hash = 2166136261u;
+    for (i32 i = 0; i < length; i++) {
+        hash ^= (byte)key[i];
+        hash *= 16777619;
+    }
+    return hash;
+}
+
 ObjString* copyString(const char* chars, i32 length) {
+    u32 hash = hashString(chars, length);
+
+    ObjString* interned = tableFindString(&vm.strings, chars, length, hash);
+
+    if (interned != NULL) return interned;
+
     char* heapChars = ALLOCATE(char, length + 1);
     memcpy(heapChars, chars, length);
     heapChars[length] = 0;
-    return allocateString(heapChars, length);
+    return allocateString(heapChars, length, hash);
 }
 
 void printObject(Value value) {
@@ -39,5 +59,13 @@ void printObject(Value value) {
 }
 
 ObjString* takeString(char* chars, i32 length) {
-    return allocateString(chars, length);
+    u32 hash = hashString(chars, length);
+    ObjString* interned = tableFindString(&vm.strings, chars, length, hash);
+
+    if (interned != NULL) {
+        FREE_ARRAY(char, chars, length + 1);
+        return interned;
+    }
+
+    return allocateString(chars, length, hash);
 }

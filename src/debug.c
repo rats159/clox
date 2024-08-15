@@ -27,6 +27,7 @@ static i32 constantInstruction(const char* name, Chunk* chunk, i32 offset) {
 i32 disassembleInstruction(Chunk* chunk, i32 offset) {
 #define SIMPLE(token) \
     case token: return simpleInstruction(#token, offset)
+
     printf("%04d ", offset);
 
     if (offset > 0 && chunk->lines[offset] == chunk->lines[offset - 1]) {
@@ -39,6 +40,15 @@ i32 disassembleInstruction(Chunk* chunk, i32 offset) {
     switch (instruction) {
         case OP_CONSTANT:
             return constantInstruction("OP_CONSTANT", chunk, offset);
+
+        case OP_DEFINE_GLOBAL:
+            return constantInstruction("OP_DEFINE_GLOBAL", chunk, offset);
+
+        case OP_GET_GLOBAL:
+            return constantInstruction("OP_GET_GLOBAL", chunk, offset);
+
+        case OP_SET_GLOBAL:
+            return constantInstruction("OP_SET_GLOBAL", chunk, offset);
 
             // I like this little macro, but clang-format does not.
             SIMPLE(OP_NIL);
@@ -53,10 +63,15 @@ i32 disassembleInstruction(Chunk* chunk, i32 offset) {
             SIMPLE(OP_NEGATE);
 
             SIMPLE(OP_RETURN);
+
             SIMPLE(OP_ADD);
             SIMPLE(OP_SUBTRACT);
             SIMPLE(OP_DIVIDE);
             SIMPLE(OP_MULTIPLY);
+
+            SIMPLE(OP_POP);
+
+            SIMPLE(OP_PRINT);
         default: printf("Unknown opcode %d\n", instruction); return offset + 1;
     }
 #undef SIMPLE
