@@ -24,6 +24,12 @@ static i32 constantInstruction(const char* name, Chunk* chunk, i32 offset) {
     return offset + 2;
 }
 
+static i32 byteInstruction(const char* name, Chunk* chunk, i32 offset) {
+    byte slot = chunk->code[offset + 1];
+    printf("%-16s %4d\n", name, slot);
+    return offset + 2;
+}
+
 i32 disassembleInstruction(Chunk* chunk, i32 offset) {
 #define SIMPLE(token) \
     case token: return simpleInstruction(#token, offset)
@@ -72,6 +78,11 @@ i32 disassembleInstruction(Chunk* chunk, i32 offset) {
             SIMPLE(OP_POP);
 
             SIMPLE(OP_PRINT);
+
+        case OP_GET_LOCAL:
+            return byteInstruction("OP_GET_LOCAL", chunk, offset);
+        case OP_SET_LOCAL:
+            return byteInstruction("OP_SET_LOCAL", chunk, offset);
         default: printf("Unknown opcode %d\n", instruction); return offset + 1;
     }
 #undef SIMPLE
