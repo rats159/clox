@@ -30,6 +30,14 @@ static i32 byteInstruction(const char* name, Chunk* chunk, i32 offset) {
     return offset + 2;
 }
 
+static i32 jumpInstruction(const char* name, i32 sign, Chunk* chunk,
+                           i32 offset) {
+    u16 jump = (u16)(chunk->code[offset + 1] << 8);
+    jump |= chunk->code[offset + 2];
+    printf("%-16s %4d -> %d\n", name, offset, offset + 3 + sign * jump);
+    return offset + 3;
+}
+
 i32 disassembleInstruction(Chunk* chunk, i32 offset) {
 #define SIMPLE(token) \
     case token: return simpleInstruction(#token, offset)
@@ -83,6 +91,11 @@ i32 disassembleInstruction(Chunk* chunk, i32 offset) {
             return byteInstruction("OP_GET_LOCAL", chunk, offset);
         case OP_SET_LOCAL:
             return byteInstruction("OP_SET_LOCAL", chunk, offset);
+
+        case OP_LOOP: return jumpInstruction("OP_LOOP", -1, chunk, offset);
+        case OP_JUMP: return jumpInstruction("OP_JUMP", 1, chunk, offset);
+        case OP_JUMP_IF_FALSE:
+            return jumpInstruction("OP_JUMP_IF_FALSE", 1, chunk, offset);
         default: printf("Unknown opcode %d\n", instruction); return offset + 1;
     }
 #undef SIMPLE

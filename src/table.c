@@ -19,7 +19,7 @@ void freeTable(Table* table) {
     initTable(table);
 }
 
-static Entry* findEntry(Entry* entries, int capacity, ObjString* key) {
+static Entry* findEntry(Entry* entries, i32 capacity, ObjString* key) {
     u32 index = key->hash % capacity;
     Entry* tombstone = NULL;
 
@@ -65,7 +65,7 @@ static void adjustCapacity(Table* table, i32 capacity) {
 
 bool tableSet(Table* table, ObjString* key, Value value) {
     if (table->count + 1 > table->capacity * TABLE_MAX_LOAD) {
-        int capacity = GROW_CAPACITY(table->capacity);
+        i32 capacity = GROW_CAPACITY(table->capacity);
         adjustCapacity(table, capacity);
     }
 
