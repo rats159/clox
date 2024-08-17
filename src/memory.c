@@ -20,8 +20,13 @@ static void freeObject(Obj* object) {
             ObjString* string = (ObjString*)object;
             FREE_ARRAY(char, string->chars, string->length + 1);
             FREE(ObjString, object);
-            break;
-        }
+        } break;
+        case OBJ_FUNCTION: {
+            ObjFunction* function = (ObjFunction*)object;
+            freeChunk(&function->chunk);
+            FREE(ObjFunction, object);
+        } break;
+        case OBJ_NATIVE: FREE(OBJ_NATIVE, object); break;
     }
 }
 

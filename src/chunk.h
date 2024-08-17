@@ -30,6 +30,8 @@ typedef enum {
     OP_JUMP,
     OP_LOOP, // Negative Jump
 
+    OP_CALL,
+
     OP_EQUAL,
     OP_GREATER,
     OP_LESS,
@@ -44,7 +46,7 @@ typedef struct {
     i32 count;
     i32 capacity;
     byte* code;
-    int* lines;
+    i32* lines;
     ValueArray constants;
 } Chunk;
 

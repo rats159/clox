@@ -15,7 +15,7 @@ void writeChunk(Chunk* chunk, byte b, i32 line) {
         i32 old_cap = chunk->capacity;
         chunk->capacity = GROW_CAPACITY(old_cap);
         chunk->code = GROW_ARRAY(byte, chunk->code, old_cap, chunk->capacity);
-        chunk->lines = GROW_ARRAY(int, chunk->lines, old_cap, chunk->capacity);
+        chunk->lines = GROW_ARRAY(i32, chunk->lines, old_cap, chunk->capacity);
     }
 
     chunk->code[chunk->count] = b;
@@ -25,7 +25,7 @@ void writeChunk(Chunk* chunk, byte b, i32 line) {
 
 void freeChunk(Chunk* chunk) {
     FREE_ARRAY(byte, chunk->code, chunk->capacity);
-    FREE_ARRAY(int, chunk->lines, chunk->capacity);
+    FREE_ARRAY(i32, chunk->lines, chunk->capacity);
     freeValueArray(&chunk->constants);
     initChunk(chunk);
 }
