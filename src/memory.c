@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "memory.h"
@@ -26,7 +27,17 @@ static void freeObject(Obj* object) {
             freeChunk(&function->chunk);
             FREE(ObjFunction, object);
         } break;
-        case OBJ_NATIVE: FREE(OBJ_NATIVE, object); break;
+        case OBJ_CLOSURE: {
+            ObjClosure* closure = (ObjClosure*)object;
+            FREE_ARRAY(ObjUpvalue*, closure->upvalues, closure->upvalueCount);
+            FREE(ObjClosure, object);
+        } break;
+        case OBJ_NATIVE: FREE(ObjNative, object); break;
+        case OBJ_UPVALUE: FREE(ObjUpvalue, object); break;
+        default:
+            fprintf(stderr, "Fatal error: Heap-allocated object unable to be "
+                            "freed. Missing switch branch in freeObject()\n");
+            exit(1);
     }
 }
 

@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include "debug.h"
+#include "object.h"
 #include "value.h"
 
 void disassembleChunk(Chunk* chunk, const char* name) {
@@ -87,6 +88,13 @@ i32 disassembleInstruction(Chunk* chunk, i32 offset) {
 
             SIMPLE(OP_PRINT);
 
+        case OP_GET_UPVALUE:
+            return byteInstruction("OP_GET_UPVALUE", chunk, offset);
+        case OP_SET_UPVALUE:
+            return byteInstruction("OP_SET_UPVALUE", chunk, offset);
+
+            SIMPLE(OP_CLOSE_UPVALUE);
+
         case OP_GET_LOCAL:
             return byteInstruction("OP_GET_LOCAL", chunk, offset);
         case OP_SET_LOCAL:
@@ -98,6 +106,25 @@ i32 disassembleInstruction(Chunk* chunk, i32 offset) {
         case OP_JUMP: return jumpInstruction("OP_JUMP", 1, chunk, offset);
         case OP_JUMP_IF_FALSE:
             return jumpInstruction("OP_JUMP_IF_FALSE", 1, chunk, offset);
+
+        case OP_CLOSURE: {
+            offset++;
+            byte constant = chunk->code[offset++];
+            printf("%-16s %4d ", "OP_CLOSURE", constant);
+            printValue(chunk->constants.values[constant]);
+            printf("\n");
+
+            ObjFunction* function =
+                AS_FUNCTION(chunk->constants.values[constant]);
+            for (int j = 0; j < function->upvalueCount; j++) {
+                int isLocal = chunk->code[offset++];
+                int index = chunk->code[offset++];
+                printf("%04d      |                     %s %d\n", offset - 2,
+                       isLocal ? "local" : "upvalue", index);
+            }
+
+            return offset;
+        }
         default: printf("Unknown opcode %d\n", instruction); return offset + 1;
     }
 #undef SIMPLE
